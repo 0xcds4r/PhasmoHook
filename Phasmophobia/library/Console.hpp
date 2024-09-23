@@ -3,10 +3,17 @@
 #include <cstdio>
 #include <print>
 #include <string>
-#define LOG_DEBUG(text) console::OutConsole(console::Debug,text,__FILE__,__LINE__)
-#define LOG_INFO(text) console::OutConsole(console::Info,text,__FILE__,__LINE__)
-#define LOG_WARNING(text) console::OutConsole(console::Warning,text,__FILE__,__LINE__)
-#define LOG_ERROR(text) console::OutConsole(console::Error,text,__FILE__,__LINE__)
+#include <format>
+#include <cstdarg>
+//#define LOG_DEBUG(text) console::OutConsole(console::Debug,text,__FILE__,__LINE__)
+//#define LOG_INFO(text) console::OutConsole(console::Info,text,__FILE__,__LINE__)
+//#define LOG_WARNING(text) console::OutConsole(console::Warning,text,__FILE__,__LINE__)
+//#define LOG_ERROR(text) console::OutConsole(console::Error,text,__FILE__,__LINE__)
+
+#define LOG_FMT_DEBUG(text) console::OutConsole(console::Debug,std::string(text) + std::string("\n"),__FILE__,__LINE__)
+#define LOG_FMT_INFO(text) console::OutConsole(console::Info,std::string(text) + std::string("\n"),__FILE__,__LINE__)
+#define LOG_FMT_WARNING(text) console::OutConsole(console::Warning,std::string(text) + std::string("\n"),__FILE__,__LINE__)
+#define LOG_FMT_ERROR(text) console::OutConsole(console::Error,std::string(text) + std::string("\n"),__FILE__,__LINE__)
 
 namespace console {
 	enum OutType : short int {
@@ -42,23 +49,23 @@ namespace console {
 				std::print(" ");
 				SetConsoleTextAttribute(hWnd_, BACKGROUND_INTENSITY | Black);
 				SetConsoleTextAttribute(hWnd_, FOREGROUND_INTENSITY | White);
-				std::print("[");
+				std::print("(");
 				SetConsoleTextAttribute(hWnd_, FOREGROUND_INTENSITY | Green);
 				std::print("Info ");
 				break;
-			case Debug: SetConsoleTextAttribute(hWnd_, BACKGROUND_INTENSITY | Blue * 16);
+			case Debug: SetConsoleTextAttribute(hWnd_, BACKGROUND_INTENSITY | LightRed * 16);
 				std::print(" ");
 				SetConsoleTextAttribute(hWnd_, BACKGROUND_INTENSITY | Black);
 				SetConsoleTextAttribute(hWnd_, FOREGROUND_INTENSITY | White);
-				std::print("[");
-				SetConsoleTextAttribute(hWnd_, FOREGROUND_INTENSITY | Blue);
+				std::print("(");
+				SetConsoleTextAttribute(hWnd_, FOREGROUND_INTENSITY | LightRed);
 				std::print("Debug");
 				break;
 			case Warning: SetConsoleTextAttribute(hWnd_, BACKGROUND_INTENSITY | Yellow * 16);
 				std::print(" ");
 				SetConsoleTextAttribute(hWnd_, BACKGROUND_INTENSITY | Black);
 				SetConsoleTextAttribute(hWnd_, FOREGROUND_INTENSITY | White);
-				std::print("[");
+				std::print(")");
 				SetConsoleTextAttribute(hWnd_, FOREGROUND_INTENSITY | Yellow);
 				std::print("Warn ");
 				break;
@@ -66,17 +73,17 @@ namespace console {
 				std::print(" ");
 				SetConsoleTextAttribute(hWnd_, BACKGROUND_INTENSITY | Black);
 				SetConsoleTextAttribute(hWnd_, FOREGROUND_INTENSITY | White);
-				std::print("[");
+				std::print("(");
 				SetConsoleTextAttribute(hWnd_, FOREGROUND_INTENSITY | Red);
 				std::print("Error");
 				break;
 		}
 		SetConsoleTextAttribute(hWnd_, FOREGROUND_INTENSITY | White);
-		std::print("]>[");
-		SetConsoleTextAttribute(hWnd_, FOREGROUND_INTENSITY | Purple);
+		std::print(") (");
+		SetConsoleTextAttribute(hWnd_, FOREGROUND_INTENSITY | Red);
 		std::print("{}:{}", file.substr(file.find_last_of('\\') + 1), line);
 		SetConsoleTextAttribute(hWnd_, FOREGROUND_INTENSITY | White);
-		std::print("] :{}", text);
+		std::print(") -> {}", text);
 	}
 
 	static auto StartConsole(const wchar_t* title, const bool close) -> HWND {

@@ -98,8 +98,19 @@ public:
     GhostActivity* ghostActivity;
     char space4[0x60];
     float speed;
-    char space5[0x8];
-    bool hunt;
+    float unk1;
+    float unk2;
+    bool canEnterHuntingMode;
+    bool someBool;
+    II::Vector3 someVector;
+    II::GameObject* huntingPostProcessingVolume;
+    bool canAttack;
+    bool isHunting;
+    bool smudgeSticksUsed;
+    bool canWander;
+    char otherSkipData[0x95];
+
+    static inline auto GetOffsetValue(GhostAI* _this, const std::string& name);
 
     static auto InitOnce() -> void;
 	inline static GhostAI* ghost{};

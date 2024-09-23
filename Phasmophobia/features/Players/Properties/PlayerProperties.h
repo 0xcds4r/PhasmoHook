@@ -17,8 +17,6 @@ public:
 	auto               Load(nlohmann::json& json) -> void override;
 
 	static auto GetInstance() -> PlayerProperties*;
-private:
-
 };
 
 #endif

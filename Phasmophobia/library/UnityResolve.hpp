@@ -40,6 +40,101 @@
 #define UNITY_CALLING_CONVENTION
 #endif
 
+enum HumanBodyBones {
+	Hips,                     // 0x0400003C, 60
+	LeftUpperLeg,             // 0x0400003D, 61
+	RightUpperLeg,            // 0x0400003E, 62
+	LeftLowerLeg,             // 0x0400003F, 63
+	RightLowerLeg,            // 0x04000040, 64
+	LeftFoot,                 // 0x04000041, 65
+	RightFoot,                // 0x04000042, 66
+	Spine,                    // 0x04000043, 67
+	Chest,                    // 0x04000044, 68
+	UpperChest = 54,          // 0x04000045, 69
+	Neck = 9,                 // 0x04000046, 70
+	Head,                     // 0x04000047, 71
+	LeftShoulder,             // 0x04000048, 72
+	RightShoulder,            // 0x04000049, 73
+	LeftUpperArm,             // 0x0400004A, 74
+	RightUpperArm,            // 0x0400004B, 75
+	LeftLowerArm,             // 0x0400004C, 76
+	RightLowerArm,            // 0x0400004D, 77
+	LeftHand,                 // 0x0400004E, 78
+	RightHand,                // 0x0400004F, 79
+	LeftToes,                 // 0x04000050, 80
+	RightToes,                // 0x04000051, 81
+	LeftEye,                  // 0x04000052, 82
+	RightEye,                 // 0x04000053, 83
+	Jaw,                      // 0x04000054, 84
+	LeftThumbProximal,        // 0x04000055, 85
+	LeftThumbIntermediate,    // 0x04000056, 86
+	LeftThumbDistal,          // 0x04000057, 87
+	LeftIndexProximal,        // 0x04000058, 88
+	LeftIndexIntermediate,    // 0x04000059, 89
+	LeftIndexDistal,          // 0x0400005A, 90
+	LeftMiddleProximal,       // 0x0400005B, 91
+	LeftMiddleIntermediate,   // 0x0400005C, 92
+	LeftMiddleDistal,         // 0x0400005D, 93
+	LeftRingProximal,         // 0x0400005E, 94
+	LeftRingIntermediate,     // 0x0400005F, 95
+	LeftRingDistal,           // 0x04000060, 96
+	LeftLittleProximal,       // 0x04000061, 97
+	LeftLittleIntermediate,   // 0x04000062, 98
+	LeftLittleDistal,         // 0x04000063, 99
+	RightThumbProximal,       // 0x04000064, 100
+	RightThumbIntermediate,   // 0x04000065, 101
+	RightThumbDistal,         // 0x04000066, 102
+	RightIndexProximal,       // 0x04000067, 103
+	RightIndexIntermediate,   // 0x04000068, 104
+	RightIndexDistal,         // 0x04000069, 105
+	RightMiddleProximal,      // 0x0400006A, 106
+	RightMiddleIntermediate,  // 0x0400006B, 107
+	RightMiddleDistal,        // 0x0400006C, 108
+	RightRingProximal,        // 0x0400006D, 109
+	RightRingIntermediate,    // 0x0400006E, 110
+	RightRingDistal,          // 0x0400006F, 111
+	RightLittleProximal,      // 0x04000070, 112
+	RightLittleIntermediate,  // 0x04000071, 113
+	RightLittleDistal,        // 0x04000072, 114
+	LastBone = 55             // 0x04000073, 115
+};
+/*
+enum BoneType
+{
+	// The bone is not assigned or identified yet.
+	Unassigned,
+
+	// Bones in the spine.
+	Spine,
+
+	// Bones in the head.
+	Head,
+
+	// Bones in the arms.
+	Arm,
+
+	// Bones in the legs.
+	Leg,
+
+	// Bones in the tail (for creatures or animals that have tails).
+	Tail,
+
+	// Bones related to the eyes.
+	Eye
+};
+
+enum BoneSide
+{
+	// Center bone, positioned along the center of the body.
+	Center,
+
+	// Bone on the left side of the body.
+	Left,
+
+	// Bone on the right side of the body.
+	Right
+};*/
+
 class UnityResolve final {
 public:
 	struct Assembly;
@@ -83,6 +178,12 @@ public:
 		std::string          namespaze;
 		std::vector<Field*>  fields;
 		std::vector<Method*> methods;
+
+		void PrintFieldNames() const {
+			for (const auto& field : fields) {
+				std::cout << "Field Name: " << field->name << std::endl;
+			}
+		}
 
 		template <typename RType>
 		auto Get(const std::string& name, const std::vector<std::string>& args = {}) -> RType* {
@@ -261,7 +362,6 @@ public:
 			ForeachAssembly();
 
 			if (Get("UnityEngine.dll") && (!Get("UnityEngine.CoreModule.dll") || !Get("UnityEngine.PhysicsModule.dll"))) {
-				// 兼容某些游戏 (如生死狙击2)
 				for (const std::vector<std::string> names = {"UnityEngine.CoreModule.dll", "UnityEngine.PhysicsModule.dll"}; const auto name : names) {
 					const auto ass      = Get("UnityEngine.dll");
 					const auto assembly = new Assembly{.address = ass->address, .name = name, .file = ass->file, .classes = ass->classes};
@@ -1381,6 +1481,7 @@ public:
 		};
 
 		struct Transform : Component {
+
 			auto GetPosition() -> Vector3 {
 				static Method* method;
 				if (!method) method = Get("UnityEngine.CoreModule.dll")->Get("Transform")->Get<Method>(mode_ == Mode::Mono ? "get_position_Injected" : "get_position");
@@ -1522,6 +1623,54 @@ public:
 			}
 		};
 
+		struct SkinnedMeshRenderer {
+			std::vector<Transform*> GetBones() {
+				static Method* method;
+				if (!method) {
+					// Assume 'Get' is a function that retrieves the method from the assembly
+					method = Get("UnityEngine.CoreModule.dll")->Get("SkinnedMeshRenderer")->Get<Method>("get_bones");
+				}
+				if (method) {
+					// Invoke the method to get the array of bones
+					Array<Transform*>* bonesArray = method->Invoke<Array<Transform*>*>(this);
+					return bonesArray->ToVector(); // Convert the array to a std::vector
+				}
+				throw std::logic_error("Unable to get bones.");
+			}
+		};
+
+		struct Animator {
+			auto GetBoneTransform(int humanBoneId) -> Transform* {
+				static Method* getBoneTransformMethod = nullptr;
+				if (!getBoneTransformMethod) {
+					getBoneTransformMethod = Get("UnityEngine.AnimationModule.dll")
+						->Get("Animator")
+						->Get<Method>("GetBoneTransform", { "HumanBodyBones" });
+				}
+				if (getBoneTransformMethod) {
+					return getBoneTransformMethod->Invoke<Transform*>(this, humanBoneId);
+				}
+				else {
+					throw std::logic_error("Method GetBoneTransform not found");
+				}
+			}
+
+			auto GetBoneTransformInternal(int humanBoneId) -> Transform* {
+				static Method* getBoneTransformInternalMethod = nullptr;
+				if (!getBoneTransformInternalMethod) {
+					getBoneTransformInternalMethod = Get("UnityEngine.AnimationModule.dll")
+						->Get("Animator")
+						->Get<Method>("GetBoneTransformInternal", { "System.Int32" });
+				}
+				if (getBoneTransformInternalMethod) {
+					return getBoneTransformInternalMethod->Invoke<Transform*>(this, humanBoneId);
+				}
+				else {
+					throw std::logic_error("Method GetBoneTransformInternal not found");
+				}
+			}
+		};
+
 		struct GameObject {
 			static auto Create(GameObject* obj, const std::string& name) -> void {
 				static Method* method;
@@ -1557,6 +1706,7 @@ public:
 				throw std::logic_error("nullptr");
 			}
 
+
 			auto GetComponent() -> Component* {
 				static Method* method;
 				if (!method) method = Get("UnityEngine.CoreModule.dll")->Get("GameObject")->Get<Method>("GetComponent", {"System.Type"});
@@ -1564,11 +1714,38 @@ public:
 				throw std::logic_error("nullptr");
 			}
 
+			auto GetComponentRigidbody() -> Rigidbody* {
+				static Method* method;
+				if (!method) method = Get("UnityEngine.CoreModule.dll")->Get("GameObject")->Get<Method>("GetComponent", { "System.Type" });
+				if (method) {
+					auto rigidbodyType = Get("UnityEngine.PhysicsModule.dll")->Get("Rigidbody");
+					if (rigidbodyType) {
+						return method->Invoke<Rigidbody*>(this, rigidbodyType);
+					}
+				}
+				throw std::logic_error("Could not retrieve Rigidbody component.");
+			}
+
 			template <typename T>
 			auto GetComponents(Class* type, bool useSearchTypeAsArrayReturnType = false, bool recursive = false, bool includeInactive = true, bool reverse = false, List<T>* resultList = nullptr) -> std::vector<T> {
 				static Method* method;
 				if (!method) method = Get("UnityEngine.CoreModule.dll")->Get("GameObject")->Get<Method>("GetComponentsInternal");
 				if (method) return method->Invoke<Array<T>*>(this, type->GetType().GetObject(), useSearchTypeAsArrayReturnType, recursive, includeInactive, reverse, resultList)->ToVector();
+				throw std::logic_error("nullptr");
+			}
+
+			
+			auto GetSkinnedMeshRenderer() -> SkinnedMeshRenderer* {
+				static Method* method;
+				if (!method) method = Get("UnityEngine.CoreModule.dll")->Get("GameObject")->Get<Method>("GetComponent", { "SkinnedMeshRenderer" });
+				if (method) return method->Invoke<SkinnedMeshRenderer*>(this);
+				throw std::logic_error("nullptr");
+			}
+
+			auto GetAnimator() -> Animator* {
+				static Method* method;
+				if (!method) method = Get("UnityEngine.CoreModule.dll")->Get("GameObject")->Get<Method>("GetComponent", { "Animator" });
+				if (method) return method->Invoke<Animator*>(this);
 				throw std::logic_error("nullptr");
 			}
 

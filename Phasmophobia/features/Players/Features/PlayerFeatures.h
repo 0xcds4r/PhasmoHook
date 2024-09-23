@@ -16,7 +16,7 @@ public:
 	auto               Load(nlohmann::json& json) -> void override;
 
 	static auto GetInstance() -> PlayerFeatures*;
-private:
-
+public:
+	inline static bool bAntiStamina = false;
 };
 #endif

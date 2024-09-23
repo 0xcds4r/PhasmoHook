@@ -11,24 +11,31 @@
 #include "features/Players/List/PlayerList.hpp"
 #include "features/Players/Properties/PlayerProperties.h"
 #include "features/Rooms/List/RoomList.hpp"
+#include "features/Players/PlayerStamina.hpp"
+#include "features/Players/FirstPersonController.h"
+#include "library/Console.hpp"
 
 namespace init_space {
 #define ADD(name) features[name::GetInstance()->GetInfo().tableName].push_back(reinterpret_cast<Feature*>(name::GetInstance()))
 
 	auto Feature::Init() -> void {
+		LOG_FMT_DEBUG("Phasmohook initializing features..");
+
 		Player::InitOnce();
+		PCStamina::InitOnce();
 		Room::InitOnce();
 		GhostAI::InitOnce();
+		FirstPersonController::InitOnce();
 
-		ADD(RoomList);
-		ADD(GhostList);
+		//ADD(RoomList);
+		//ADD(GhostList);
 		ADD(GhostEsp);
-		ADD(GhostBehavior);
-		ADD(GhostProperties);
-		ADD(GhostFeatures);
-		ADD(PlayerList);
-		ADD(PlayerBehavior);
+		//ADD(GhostBehavior);
+		//ADD(GhostProperties);
+		//ADD(GhostFeatures);
+		//ADD(PlayerList);
+		//ADD(PlayerBehavior);
 		ADD(PlayerFeatures);
-		ADD(PlayerProperties);
+		//ADD(PlayerProperties);
 	}
 }

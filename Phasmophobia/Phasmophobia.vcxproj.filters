@@ -96,6 +96,15 @@
     <ClCompile Include="features\Players\Properties\PlayerProperties.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="features\Players\PlayerStamina.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="features\Players\FirstPersonController.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="library\D3D11Hook.h">
@@ -228,6 +237,30 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="features\Players\Properties\PlayerProperties.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="features\Players\PlayerStamina.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="features\Players\FirstPersonController.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="library\imgui\fa_solid_900.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="library\imgui\font_awesome_5.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="library\imgui\imgui_notify.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="NotificationManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="dllmain.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

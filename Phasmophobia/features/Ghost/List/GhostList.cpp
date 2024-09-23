@@ -5,7 +5,7 @@
 #include "../../Players/Player.hpp"
 
 auto GhostList::GetInfo() const -> const GuiInfo& {
-	return *new GuiInfo{ reinterpret_cast<const char*>(u8"鬼魂 (Ghost)"), reinterpret_cast<const char*>(u8"列表 (List)"), true, false, false };
+	return *new GuiInfo{ reinterpret_cast<const char*>(u8"(Ghost)"), reinterpret_cast<const char*>(u8"(List)"), true, false, false };
 }
 auto GhostList::Draw() -> void { Feature::Draw(); }
 auto GhostList::Render() -> void {
@@ -15,14 +15,14 @@ auto GhostList::Render() -> void {
         ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_SizingFixedSame,
         ImVec2(0.0F, ImGui::GetTextLineHeightWithSpacing() * 8))) {
         ImGui::TableSetupScrollFreeze(1, 1);
-        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"序号 (index)"), ImGuiTableColumnFlags_None);
-        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"名称 (name)"), ImGuiTableColumnFlags_None);
-        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"猎杀 (hunt)"), ImGuiTableColumnFlags_None);
-        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"房间 (room)"), ImGuiTableColumnFlags_None);
-        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"速度 (speed)"), ImGuiTableColumnFlags_None);
-        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"类型 (type)"), ImGuiTableColumnFlags_None);
-        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"状态 (state)"), ImGuiTableColumnFlags_None);
-        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"证据 (proof)"), ImGuiTableColumnFlags_None);
+        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"(index)"), ImGuiTableColumnFlags_None);
+        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"(name)"), ImGuiTableColumnFlags_None);
+        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"(hunt)"), ImGuiTableColumnFlags_None);
+        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"(room)"), ImGuiTableColumnFlags_None);
+        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"(speed)"), ImGuiTableColumnFlags_None);
+        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"(type)"), ImGuiTableColumnFlags_None);
+        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"(state)"), ImGuiTableColumnFlags_None);
+        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"(proof)"), ImGuiTableColumnFlags_None);
         ImGui::TableHeadersRow();
 
 		if (GhostAI::ghost) {
@@ -36,7 +36,7 @@ auto GhostList::Render() -> void {
 								ImGui::PushID(GhostAI::ghost);
 								if (ImGui::TableSetColumnIndex(0)) ImGui::Text(std::format("{}", static_cast<int>(GhostAI::ghost->ghostInfo->ghostType) + 1).c_str());
 								if (ImGui::TableSetColumnIndex(1)) ImGui::Text(std::format("{}", Player::players[0]->journalController->textMeshProUgui->text->ToString()).c_str());
-								if (ImGui::TableSetColumnIndex(2)) ImGui::Text(std::format("{}", GhostAI::ghost->hunt).c_str());
+								//if (ImGui::TableSetColumnIndex(2)) ImGui::Text(std::format("{}", GhostAI::ghost->hunt).c_str());
 								if (ImGui::TableSetColumnIndex(3)) ImGui::Text(std::format("{}", GhostAI::ghost->ghostInfo->room->name->ToString()).c_str());
 								if (ImGui::TableSetColumnIndex(4)) ImGui::Text(std::format("{}", GhostAI::ghost->speed).c_str());
 								if (ImGui::TableSetColumnIndex(5)) ImGui::Text(std::format("{}", static_cast<GhostAI::GhostType>(static_cast<int>(GhostAI::ghost->ghostInfo->ghostType) + 1)).c_str());

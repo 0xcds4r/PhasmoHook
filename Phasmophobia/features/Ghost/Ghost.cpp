@@ -2,7 +2,21 @@
 
 #include "../../library/Console.hpp"
 
+inline auto GhostAI::GetOffsetValue(GhostAI* _this, const std::string& name)
+{
+	if (const auto pClass = I::Get("Assembly-CSharp.dll")->Get("GhostAI")) {
+		try {
+			return pClass->GetValue<float>(static_cast<void*>(_this), name);
+		}
+		catch (const std::exception& ex) {
+			std::cerr << "Error retrieving " << name.c_str() << ": " << ex.what() << std::endl;
+		}
+	}
+}
+
 auto GhostAI::InitOnce() -> void {
+	LOG_FMT_DEBUG("Phasmohook initializing once GhostAI..");
+
 	if (const auto pClass = I::Get("Assembly-CSharp.dll")->Get("GhostAI")) {
 		mAwake = pClass->Get<IM>("Awake")->Cast<void, GhostAI*>();
 		mAppear = pClass->Get<IM>("Appear")->Cast<void, GhostAI*, int>();
@@ -35,6 +49,6 @@ auto GhostAI::InitOnce() -> void {
 
 auto GhostAI::HAwake(GhostAI* _this) -> void {
 	ghost = _this;
-	LOG_DEBUG(std::format("GhostAI Address: {}\n", static_cast<void*>(_this)));
+	//LOG_DEBUG(std::format("GhostAI Address: {}\n", static_cast<void*>(_this)));
 	H::Fcall(HAwake, _this);
 }

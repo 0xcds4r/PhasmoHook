@@ -5,9 +5,9 @@ auto GhostProperties::GetInfo() const -> const GuiInfo& {
 auto GhostProperties::Draw() -> void { Feature::Draw(); }
 auto GhostProperties::Render() -> void { 
 	if (GhostAI::ghost) {
-		ImGui::Checkbox(U8(u8"修改鬼速 (Modify ghost speed.)"), &gSpeedEnable);
-		if (gSpeedEnable) ImGui::SliderFloat(U8(u8"鬼速 (Ghost speed)"), &gSpeed, .0f, 50.f);
-	} else ImGui::Text(U8(u8"只有鬼存在时可用 (Only available when Jinn is present.)"));
+		ImGui::Checkbox(U8(u8" (Modify ghost speed.)"), &gSpeedEnable);
+		if (gSpeedEnable) ImGui::SliderFloat(U8(u8"(Ghost speed)"), &gSpeed, .0f, 50.f);
+	} else ImGui::Text(U8(u8"(Only available when Jinn is present.)"));
 }
 auto GhostProperties::Update() -> void {
 	if (gSpeedEnable) GhostAI::ghost->speed = gSpeed;

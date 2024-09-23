@@ -24,11 +24,11 @@ PlayerBehavior::PlayerBehavior() {
 }
 
 auto PlayerBehavior::GetInfo() const -> const GuiInfo& {
-	return *new GuiInfo{ reinterpret_cast<const char*>(u8"玩家 (Players)"), reinterpret_cast<const char*>(u8"行为 (Behavior)"), true, false, false };
+	return *new GuiInfo{ reinterpret_cast<const char*>(u8"(Players)"), reinterpret_cast<const char*>(u8"(Behavior)"), true, false, false };
 }
 auto PlayerBehavior::Draw() -> void { Feature::Draw(); }
 auto PlayerBehavior::Render() -> void {
-	ImGui::Checkbox(reinterpret_cast<const char*>(u8"不死 (No dead)"), &noDead);
+	ImGui::Checkbox(reinterpret_cast<const char*>(u8"(No dead)"), &noDead);
 }
 auto PlayerBehavior::Update() -> void { Feature::Update(); }
 auto PlayerBehavior::Save(nlohmann::json& json) -> void {

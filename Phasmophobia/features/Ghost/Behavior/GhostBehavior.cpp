@@ -10,10 +10,10 @@ GhostBehavior::GhostBehavior() {
 		H::Install(GhostAI::mHunting, HHunting);
 	}
 }
-auto GhostBehavior::GetInfo() const -> const GuiInfo& { return *new GuiInfo{ reinterpret_cast<const char*>(u8"鬼魂 (Ghost)"), reinterpret_cast<const char*>(u8"行为 (Behavior)"), true, false, false }; }
+auto GhostBehavior::GetInfo() const -> const GuiInfo& { return *new GuiInfo{ reinterpret_cast<const char*>(u8"(Ghost)"), reinterpret_cast<const char*>(u8"(Behavior)"), true, false, false }; }
 auto GhostBehavior::Draw() -> void { Feature::Draw(); }
 auto GhostBehavior::Render() -> void {
-	ImGui::Checkbox(U8(u8"不猎杀 (No hunt)"), &noHunt);
+	ImGui::Checkbox(U8(u8"(No hunt)"), &noHunt);
 }
 auto GhostBehavior::Update() -> void { Feature::Update(); }
 auto GhostBehavior::Save(nlohmann::json& json) -> void { Feature::Save(json); }

@@ -39,6 +39,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\Build\Release\net8.0-windows10.0.20348.0\</OutDir>
     <IntDir>..\Build\Temp\</IntDir>
+    <TargetName>jasda</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -98,6 +99,8 @@
     <ClCompile Include="features\Players\Properties\PlayerProperties.cpp" />
     <ClCompile Include="features\Rooms\List\RoomList.cpp" />
     <ClCompile Include="features\Rooms\Room.cpp" />
+    <ClCompile Include="features\Players\FirstPersonController.cpp" />
+    <ClCompile Include="GUI.cpp" />
     <ClCompile Include="Init.cpp" />
     <ClCompile Include="library\imgui\Font.cpp" />
     <ClCompile Include="library\imgui\imgui.cpp" />
@@ -111,6 +114,7 @@
     <ClCompile Include="library\imgui\implot_demo.cpp" />
     <ClCompile Include="library\imgui\implot_items.cpp" />
     <ClCompile Include="library\kiero\kiero.cpp" />
+    <ClCompile Include="features\Players\PlayerStamina.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
@@ -136,6 +140,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dllmain.h" />
     <ClInclude Include="features\Ghost\Behavior\GhostBehavior.h" />
     <ClInclude Include="features\Ghost\Esp\GhostEsp.hpp" />
     <ClInclude Include="features\Ghost\Features\GhostFeatures.hpp" />
@@ -149,6 +154,8 @@
     <ClInclude Include="features\Players\Properties\PlayerProperties.h" />
     <ClInclude Include="features\Rooms\List\RoomList.hpp" />
     <ClInclude Include="features\Rooms\Room.hpp" />
+    <ClInclude Include="features\Players\FirstPersonController.h" />
+    <ClInclude Include="GUI.h" />
     <ClInclude Include="Init.h" />
     <ClInclude Include="library\Console.hpp" />
     <ClInclude Include="library\D3D11Hook.h" />
@@ -157,12 +164,15 @@
     <ClInclude Include="DrawMath.h" />
     <ClInclude Include="library\HotKey.hpp" />
     <ClInclude Include="ImGuiEX.h" />
+    <ClInclude Include="library\imgui\fa_solid_900.h" />
     <ClInclude Include="library\imgui\Font.h" />
+    <ClInclude Include="library\imgui\font_awesome_5.h" />
     <ClInclude Include="library\imgui\imconfig.h" />
     <ClInclude Include="library\imgui\imgui.h" />
     <ClInclude Include="library\imgui\imgui_impl_dx11.h" />
     <ClInclude Include="library\imgui\imgui_impl_win32.h" />
     <ClInclude Include="library\imgui\imgui_internal.h" />
+    <ClInclude Include="library\imgui\imgui_notify.h" />
     <ClInclude Include="library\imgui\implot.h" />
     <ClInclude Include="library\imgui\implot_internal.h" />
     <ClInclude Include="library\imgui\imstb_rectpack.h" />
@@ -180,6 +190,8 @@
     <ClInclude Include="library\magic_enum\magic_enum_switch.hpp" />
     <ClInclude Include="library\magic_enum\magic_enum_utility.hpp" />
     <ClInclude Include="library\UnityResolve.hpp" />
+    <ClInclude Include="features\Players\PlayerStamina.hpp" />
+    <ClInclude Include="NotificationManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="library\detours\[x64]detours.lib" />

@@ -3,7 +3,7 @@
 PlayerList::PlayerList() = default;
 
 auto PlayerList::GetInfo() const -> const GuiInfo& {
-	return *new GuiInfo{ reinterpret_cast<const char*>(u8"玩家 (Players)"), reinterpret_cast<const char*>(u8"列表 (List)"), true, false, false };
+	return *new GuiInfo{ reinterpret_cast<const char*>(u8"(Players)"), reinterpret_cast<const char*>(u8"(List)"), true, false, false };
 }
 
 auto PlayerList::Draw() -> void { Feature::Draw(); }
@@ -15,9 +15,9 @@ auto PlayerList::Render() -> void {
         ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable,
         ImVec2(0.0F, ImGui::GetTextLineHeightWithSpacing() * 8))) {
         ImGui::TableSetupScrollFreeze(1, 1);
-        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"名称 (name)"), ImGuiTableColumnFlags_None);
-		ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"死亡 (dead)"), ImGuiTableColumnFlags_None);
-		ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"房间 (room)"), ImGuiTableColumnFlags_None);
+        ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"(name)"), ImGuiTableColumnFlags_None);
+		ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"(dead)"), ImGuiTableColumnFlags_None);
+		ImGui::TableSetupColumn(reinterpret_cast<const char*>(u8"(room)"), ImGuiTableColumnFlags_None);
         ImGui::TableHeadersRow();
 
         std::lock_guard lock(Player::playersMutex);
