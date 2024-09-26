@@ -4,15 +4,30 @@
 
 inline auto GhostAI::GetOffsetValue(GhostAI* _this, const std::string& name)
 {
-	if (const auto pClass = I::Get("Assembly-CSharp.dll")->Get("GhostAI")) {
+	GET_CLASS("Assembly-CSharp.dll", "GhostAI", pClass) {
 		try {
 			return pClass->GetValue<float>(static_cast<void*>(_this), name);
 		}
 		catch (const std::exception& ex) {
-			std::cerr << "Error retrieving " << name.c_str() << ": " << ex.what() << std::endl;
+			LOG_FMT_DEBUG("Error retrieving -> {} {}", name.c_str(), ex.what());
 		}
 	}
 }
+
+Room* GhostAI::GetGhostCurrentRoom(GhostAI* _this)
+{
+	GET_CLASS("Assembly-CSharp.dll", "GhostAI", pClass) {
+		void* pGhostInfo = pClass->GetValue<void*>(static_cast<void*>(_this), 0x38);
+
+		GET_CLASS("Assembly-CSharp.dll", "GhostInfo", pGhostInfoClass) {
+			return pGhostInfoClass->GetValue<Room*>(pGhostInfo, 0x70);
+		}
+	}
+
+	return nullptr;
+}
+
+// 0x38 + 0x70
 
 auto GhostAI::InitOnce() -> void {
 	LOG_FMT_DEBUG("Phasmohook initializing once GhostAI..");
@@ -47,7 +62,19 @@ auto GhostAI::InitOnce() -> void {
 	}
 }
 
+void GhostAI::UpdateFavouriteRoom(const std::string& roomName)
+{
+	GhostAI::favRoom = roomName;
+}
+
+void GhostAI::UpdateCurrentRoom(const std::string& roomName)
+{
+	GhostAI::currentRoom = roomName;
+}
+
 auto GhostAI::HAwake(GhostAI* _this) -> void {
+	GhostAI::pEMF.clear();
+	GhostAI::pDNA = nullptr;
 	ghost = _this;
 	//LOG_DEBUG(std::format("GhostAI Address: {}\n", static_cast<void*>(_this)));
 	H::Fcall(HAwake, _this);

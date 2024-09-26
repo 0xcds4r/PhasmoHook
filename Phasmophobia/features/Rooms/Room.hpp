@@ -34,13 +34,18 @@ public:
     char space2[0x8];
     FloorType floorType;*/
 
-	static auto InitOnce() -> void;
+    static inline II::String* GetOffsetValueStr(Room* _this, unsigned int pointer);
+
+    static auto InitOnce() -> void;
 	inline static std::vector<Room*> rooms{};
 	inline static std::mutex         roomsMutex;
 
 private:
 	inline static IM::MethodPointer<void, Room*> mAwake{};
 	inline static auto UNITY_CALLING_CONVENTION  HAwake(Room* _this) -> void;
+
+    inline static IM::MethodPointer<void, Room*> mUpdate{};
+    inline static auto UNITY_CALLING_CONVENTION  HUpdate(Room* _this) -> void;
 };
 
 class LevelController : public II::MonoBehaviour {

@@ -13,6 +13,9 @@
 #include "features/Rooms/List/RoomList.hpp"
 #include "features/Players/PlayerStamina.hpp"
 #include "features/Players/FirstPersonController.h"
+#include "features/RenderSettings/RenderSettings.h"
+#include "features/DNAEvidence.h"
+#include "features/EMF.h"
 #include "library/Console.hpp"
 
 namespace init_space {
@@ -20,11 +23,14 @@ namespace init_space {
 
 	auto Feature::Init() -> void {
 		LOG_FMT_DEBUG("Phasmohook initializing features..");
-
+		
+		RenderSettings::InitOnce();
 		Player::InitOnce();
 		PCStamina::InitOnce();
 		Room::InitOnce();
 		GhostAI::InitOnce();
+		DNAEvidence::InitOnce();
+		EMF::InitOnce();
 		FirstPersonController::InitOnce();
 
 		//ADD(RoomList);

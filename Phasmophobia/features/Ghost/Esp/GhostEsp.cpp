@@ -1,6 +1,7 @@
 ﻿#include "GhostEsp.hpp"
 #include "../Ghost.hpp"
 #include "../../../GUI.h"
+#include "../../../library/Console.hpp"
 
 auto GhostEsp::GetInfo() const -> const GuiInfo& { return *new GuiInfo{ reinterpret_cast<const char*>(u8"(Ghost)"), reinterpret_cast<const char*>(u8"(Esp)"), true, false, true }; }
 
@@ -16,40 +17,40 @@ auto DrawGhostBoxAndInfo(const ImVec2& point, float distance, float boxSizeMax, 
     }
 }
 
-auto GhostEsp::DrawGhostStateInfo(float distance) -> void {
-
-    auto screenWidth = init_space::Info::w;
-    auto screenHeight = init_space::Info::h;
-
-    ImVec2 textPos = { screenWidth * 0.5f, screenHeight - 30.0f };
-    ImVec2 textPosAtStart = { screenWidth * 0.005f, screenHeight - 30.0f };
-    
-    static bool bHunting = false;
-
-    if (GhostAI::ghost->isHunting && !bHunting)
-    {
-        Gui::AddNotify("[!] HUNTING START", "The ghost has started the hunt", 3.5f, ImColor(255, 255, 255, 255), ImColor(249, 36, 14, 150));
-        bHunting = true;
+auto GhostEsp::DrawGhostStateInfo(float distance) -> void 
+{
+    if (!GhostAI::ghost) {
+        LOG_FMT_DEBUG("GhostAI::ghost is null");
+        return;
     }
 
-    if (!GhostAI::ghost->isHunting && bHunting)
-    {
-        Gui::AddNotify("[!] HUNTING END", "The ghost stopped the hunt", 3.5f, ImColor(255, 255, 255, 255), ImColor(0, 185, 204, 150));
-        bHunting = false;
-    }
-    
-    {
+    try {
+        auto screenWidth = init_space::Info::w;
+        auto screenHeight = init_space::Info::h;
+
+        ImVec2 textPos = { screenWidth * 0.5f, screenHeight - 30.0f };
+        ImVec2 textPosAtStart = { screenWidth * 0.005f, screenHeight - 30.0f };
+
+        static bool bHunting = false;
+
+        // Проверка на нулевые указатели перед доступом к полям
+        if (GhostAI::ghost->isHunting && !bHunting) {
+            Gui::AddNotify("[!] HUNTING START", "The ghost has started the hunt", 3.5f, ImColor(255, 255, 255, 255), ImColor(249, 36, 14, 150));
+            bHunting = true;
+        }
+
+        if (!GhostAI::ghost->isHunting && bHunting) {
+            Gui::AddNotify("[!] HUNTING END", "The ghost stopped the hunt", 3.5f, ImColor(255, 255, 255, 255), ImColor(0, 185, 204, 150));
+            bHunting = false;
+        }
+
         if (GhostAI::ghost->ghostInfo) {
-            const char* strInfo = std::format("Ghost State: {} | Ghost Type: {} | Ghost Distance: {:.2f}" /* | States: 1 : {} 2 : {} 3 : {} 4 : {} 5 : {} 6 : {}"*/,
-                !GhostAI::ghost->isHunting ? GhostAI::ghost->ghostState : GhostAI::GhostState::Hunting,
-                static_cast<GhostAI::GhostType>(static_cast<int>(GhostAI::ghost->ghostInfo->ghostType) + 1),
-                distance/*,
-                GhostAI::ghost->canEnterHuntingMode ? "Y" : "N",
-                GhostAI::ghost->someBool ? "Y" : "N",
-                GhostAI::ghost->isHunting ? "Y" : "N",
-                GhostAI::ghost->canAttack ? "Y" : "N",
-                GhostAI::ghost->smudgeSticksUsed ? "Y" : "N",
-                GhostAI::ghost->canWander ? "Y" : "N"*/
+            auto ghostState = !GhostAI::ghost->isHunting ? GhostAI::ghost->ghostState : GhostAI::GhostState::Hunting;
+            auto ghostType = static_cast<GhostAI::GhostType>(static_cast<int>(GhostAI::ghost->ghostInfo->ghostType) + 1);
+            auto favRoom = GhostAI::favRoom.c_str();
+
+            const char* strInfo = std::format("Ghost Type: {} | Fav Room: {} | Ghost State: {} | Ghost Distance: {:.2f}",
+                ghostType, favRoom, ghostState, distance
             ).c_str();
 
             ImVec2 textSize = ImGui::CalcTextSize(strInfo);
@@ -60,9 +61,7 @@ auto GhostEsp::DrawGhostStateInfo(float distance) -> void {
 
             /*if (LevelController::gLevelController) {
                 auto pRoom = GhostAI::ghost->ghostInfo->room;
-
-                if (pRoom && pRoom->name)
-                {
+                if (pRoom && pRoom->name) {
                     textPos.y -= 30.0f;
                     std::string formatMessage = std::format("Room: {}", pRoom->name->ToString().c_str());
                     DrawTextWithOutline(ImGui::GetBackgroundDrawList(),
@@ -70,23 +69,21 @@ auto GhostEsp::DrawGhostStateInfo(float distance) -> void {
                 }
             }*/
         }
-
-        std::string strCheatsInfo("");
-        if (bEsp) {
-            strCheatsInfo += "\t[ESP]";
+        else {
+            LOG_FMT_DEBUG("GhostAI::ghostInfo is null");
         }
-
-        if (bBoneWallHack) {
-            strCheatsInfo += "\t[WallHack]";
-        }
-
-        //ImVec2 textSize = ImGui::CalcTextSize(strCheatsInfo.c_str());
-        //textPosAtStart.x -= textSize.x * 0.5f;
-
-        DrawTextWithOutline(ImGui::GetBackgroundDrawList(),
-            textPosAtStart, strCheatsInfo.c_str(), ImColor(255, 255, 255), 1.0f, ImGuiEx::OutlineSide::All, ImColor(0, 0, 0));
+    }
+    catch (const std::runtime_error& e) {
+        LOG_FMT_DEBUG("Runtime error: {}", e.what());
+    }
+    catch (const std::exception& e) {
+        LOG_FMT_DEBUG("Exception: {}", e.what());
+    }
+    catch (...) {
+        LOG_FMT_DEBUG("Unknown exception occurred in DrawGhostStateInfo");
     }
 }
+
 
 const std::vector<std::tuple<HumanBodyBones, HumanBodyBones, const char*>> bonePairs = {
         { HumanBodyBones::Head, HumanBodyBones::Spine, "Head -> UpperChest" },
@@ -103,183 +100,308 @@ const std::vector<std::tuple<HumanBodyBones, HumanBodyBones, const char*>> boneP
         { HumanBodyBones::RightLowerLeg, HumanBodyBones::RightFoot, "RightLowerLeg -> RightFoot" }
 };
 
-auto DrawBoneConnections(II::Animator* pAnimator, float distance) -> void {
-    // really ghost bones?
-    static float firstDistance = distance;
+auto DrawBoneConnections(II::Animator* pAnimator, float distance) -> void 
+{
+    if (!pAnimator) {
+        LOG_FMT_DEBUG("pAnimator is null");
+        return;
+    }
 
-    for (const auto& [boneStart, boneEnd, label] : bonePairs) 
-    {
-        auto pStartTransform = pAnimator->GetBoneTransformInternal(boneStart);
-        auto pEndTransform = pAnimator->GetBoneTransformInternal(boneEnd);
+    auto pMainCamera = II::Camera::GetMain();
+    if (!pMainCamera) {
+        LOG_FMT_DEBUG("Main camera is null");
+        return;
+    }
 
-        if (pStartTransform && pEndTransform) 
-        {
-            auto pointStart = II::Camera::GetMain()->WorldToScreenPoint(pStartTransform->GetPosition(), UnityResolve::UnityType::Camera::Eye::Mono);
-            auto pointEnd = II::Camera::GetMain()->WorldToScreenPoint(pEndTransform->GetPosition(), UnityResolve::UnityType::Camera::Eye::Mono);
+    try {
+        static float firstDistance = distance;
 
-            if (pointStart.z > 0 && pointEnd.z > 0) 
-            {
-                constexpr float minDist = 1.0f;
-                float maxDist = firstDistance;
+        if (bonePairs.empty()) {
+            LOG_FMT_DEBUG("bonePairs is empty");
+            return;
+        }
 
-                float normalizedDistance = std::clamp((distance - minDist) / (maxDist - minDist), 0.0f, 1.0f);
+        for (const auto& [boneStart, boneEnd, label] : bonePairs) {
+            auto pStartTransform = pAnimator->GetBoneTransformInternal(boneStart);
+            auto pEndTransform = pAnimator->GetBoneTransformInternal(boneEnd);
 
-                ImU32 color = ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f - normalizedDistance, normalizedDistance, 0.0f, 1.0f));
+            if (pStartTransform && pEndTransform) {
+                auto pointStart = pMainCamera->WorldToScreenPoint(pStartTransform->GetPosition(), UnityResolve::UnityType::Camera::Eye::Mono);
+                auto pointEnd = pMainCamera->WorldToScreenPoint(pEndTransform->GetPosition(), UnityResolve::UnityType::Camera::Eye::Mono);
 
-                pointStart.y = init_space::Info::h - pointStart.y;
-                pointEnd.y = init_space::Info::h - pointEnd.y;
+                if (pointStart.z > 0 && pointEnd.z > 0) {
+                    constexpr float minDist = 1.0f;
+                    float maxDist = firstDistance;
 
-                if (pointStart.x >= init_space::Info::w || pointEnd.x >= init_space::Info::w) {
-                    continue;
+                    float normalizedDistance = std::clamp((distance - minDist) / (maxDist - minDist), 0.0f, 1.0f);
+                    ImU32 color = ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f - normalizedDistance, normalizedDistance, 0.0f, 1.0f));
+
+                    pointStart.y = init_space::Info::h - pointStart.y;
+                    pointEnd.y = init_space::Info::h - pointEnd.y;
+
+                    if (pointStart.x <= 0.0f || pointStart.x >= init_space::Info::w - 1.0f ||
+                        pointEnd.x <= 0.0f || pointEnd.x >= init_space::Info::w - 1.0f ||
+                        pointStart.y <= 0.0f || pointStart.y >= init_space::Info::h - 1.0f ||
+                        pointEnd.y <= 0.0f || pointEnd.y >= init_space::Info::h - 1.0f) 
+                    {
+                        //LOG_FMT_DEBUG("Point(s) out of bounds: pointStart: ({:.2f}, {:.2f}), pointEnd: ({:.2f}, {:.2f})",
+                        //    pointStart.x, pointStart.y, pointEnd.x, pointEnd.y);
+                        continue;
+                    }
+
+                    ImGui::GetBackgroundDrawList()->AddLine(
+                        { pointStart.x, pointStart.y },
+                        { pointEnd.x, pointEnd.y },
+                        color,
+                        1.5f
+                    );
                 }
-
-                if (pointStart.y >= init_space::Info::h || pointEnd.y >= init_space::Info::h) {
-                    continue;
-                }
-
-                if (pointStart.x <= 0.0f|| pointEnd.x <= 0.0f) {
-                    continue;
-                }
-
-                if (pointStart.y <= 0.0f || pointEnd.y <= 0.0f) {
-                    continue;
-                }
-
-                ImGui::GetBackgroundDrawList()->AddLine(
-                    { pointStart.x, pointStart.y },  
-                    { pointEnd.x, pointEnd.y },     
-                    color,
-                    2.0f                           
-                );
             }
         }
     }
+    catch (const std::runtime_error& e) {
+        LOG_FMT_DEBUG("Runtime error in DrawBoneConnections: {}", e.what());
+    }
+    catch (const std::exception& e) {
+        LOG_FMT_DEBUG("Exception in DrawBoneConnections: {}", e.what());
+    }
+    catch (...) {
+        LOG_FMT_DEBUG("Unknown exception occurred in DrawBoneConnections");
+    }
 }
 
-auto DrawCameraLinesAndCircles(II::Animator* pAnimator, float distance) -> void {
+auto DrawTextFromPosition(const char* text, II::Vector3 position) -> void
+{
+    auto pMainCamera = II::Camera::GetMain();
+    if (!pMainCamera) {
+        LOG_FMT_DEBUG("Main camera is null");
+        return;
+    }
+
+    try {
+        auto cameraPosition = pMainCamera->GetTransform()->GetPosition();
+        auto pointStart = pMainCamera->WorldToScreenPoint(position, UnityResolve::UnityType::Camera::Eye::Mono);
+
+        if (pointStart.z <= 0) {
+            return;
+        }
+
+        pointStart.y = init_space::Info::h - pointStart.y;
+
+        if (pointStart.x < 0.0f || pointStart.x >= init_space::Info::w ||
+            pointStart.y < 0.0f || pointStart.y >= init_space::Info::h) {
+            return;
+        }
+
+        ImVec2 textPosition = { pointStart.x, pointStart.y };
+        const char* fmtText = std::format("{}", text).c_str();
+        ImGui::GetBackgroundDrawList()->AddText(textPosition, ImColor(255, 255, 255, 255), fmtText);
+
+        //ImGui::GetBackgroundDrawList()->AddLine({ init_space::Info::w * 0.5f, init_space::Info::h * 0.5f },
+            //{ textPosition.x, textPosition.y }, ImColor(255, 255, 255, 255), 2.0f);
+    }
+    catch (const std::runtime_error& e) {
+        LOG_FMT_DEBUG("Runtime error in DrawTextFromPosition: {}", e.what());
+    }
+    catch (const std::exception& e) {
+        LOG_FMT_DEBUG("Exception in DrawTextFromPosition: {}", e.what());
+    }
+    catch (...) {
+        LOG_FMT_DEBUG("Unknown exception occurred in DrawTextFromPosition");
+    }
+}
+
+
+auto DrawCameraLinesAndCircles(II::Animator* pAnimator, float distance) -> void
+{
+    if (!pAnimator) {
+        LOG_FMT_DEBUG("pAnimator is null");
+        return;
+    }
+
     auto pStartTransform = pAnimator->GetBoneTransformInternal(HumanBodyBones::Spine);
-
-    static float firstDistance = distance;
-
-    if (pStartTransform) 
-    {
-        auto pointStart = II::Camera::GetMain()->WorldToScreenPoint(pStartTransform->GetPosition(), UnityResolve::UnityType::Camera::Eye::Mono);
-        if (pointStart.z > 0) 
-        {
-            pointStart.y = init_space::Info::h - pointStart.y;
-
-            if (pointStart.x >= init_space::Info::w) {
-                return;
-            }
-
-            if (pointStart.y >= init_space::Info::h) {
-                return;
-            }
-
-            if (pointStart.x <= 0.0f) {
-                return;
-            }
-
-            if (pointStart.y <= 0.0f) {
-                return;
-            }
-
-            constexpr float minDist = 1.0f; 
-            float maxDist = firstDistance;
-
-            float normalizedDistance = std::clamp((distance - minDist) / (maxDist - minDist), 0.0f, 1.0f);
-
-            ImU32 color = ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f - normalizedDistance, normalizedDistance, 0.0f, 1.0f));
-
-            ImGui::GetBackgroundDrawList()->AddLine({ init_space::Info::w * 0.5f, init_space::Info::h * 0.5f }, { pointStart.x, pointStart.y }, color, 2.0f);
-
-            ImVec2 textPosition = { init_space::Info::w * 0.5125f, init_space::Info::h * 0.5125f };
-            ImGui::GetBackgroundDrawList()->AddText(textPosition, color, std::format("{:.2f}", distance).c_str());
-        }
+    if (!pStartTransform) {
+        LOG_FMT_DEBUG("pStartTransform is null");
+        return;
     }
 
-    /*if (auto cameraPoint = II::Camera::GetMain()->WorldToScreenPoint(II::Camera::GetMain()->GetTransform()->GetPosition(), UnityResolve::UnityType::Camera::Eye::Mono); point.z > 0) {
-        if (distance >= 1.00f && distance <= 2000.0f) {
-            ImGui::GetBackgroundDrawList()->AddLine({ init_space::Info::w * 0.5f, init_space::Info::h * 0.5f }, { point.x, point.y - distance }, ImColor(rand() % 255, rand() % 255, rand() % 255), 2.0f);
-            ImGui::GetBackgroundDrawList()->AddCircle(
-                { point.x, point.y - distance }, 
-                5.0f, 
-                ImColor(rand() % 255, rand() % 255, rand() % 255),  
-                0,  
-                2.0f 
-            );
+    auto pMainCamera = II::Camera::GetMain();
+    if (!pMainCamera) {
+        LOG_FMT_DEBUG("Main camera is null");
+        return;
+    }
+
+    try { 
+        auto pointStart = pMainCamera->WorldToScreenPoint(pStartTransform->GetPosition(), UnityResolve::UnityType::Camera::Eye::Mono);
+
+        if (pointStart.z <= 0) {
+            return; 
         }
-    }*/
+
+        pointStart.y = init_space::Info::h - pointStart.y;
+
+        if (pointStart.x < 0.0f || pointStart.x >= init_space::Info::w ||
+            pointStart.y < 0.0f || pointStart.y >= init_space::Info::h) {
+            return;
+        }
+
+        constexpr float minDist = 1.0f;
+        static float firstDistance = distance;
+        float maxDist = firstDistance;
+
+        float normalizedDistance = std::clamp((distance - minDist) / (maxDist - minDist), 0.0f, 1.0f);
+        ImU32 color = ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f - normalizedDistance, normalizedDistance, 0.0f, 1.0f));
+
+        ImGui::GetBackgroundDrawList()->AddLine({ init_space::Info::w * 0.5f, init_space::Info::h * 0.5f },
+            { pointStart.x, pointStart.y }, color, 2.0f);
+
+        ImVec2 textPosition = { init_space::Info::w * 0.5125f, init_space::Info::h * 0.5125f };
+        ImGui::GetBackgroundDrawList()->AddText(textPosition, color, std::format("{:.2f}", distance).c_str());
+    }
+    catch (const std::runtime_error& e) {
+        LOG_FMT_DEBUG("Runtime error in DrawCameraLinesAndCircles: {}", e.what());
+    }
+    catch (const std::exception& e) {
+        LOG_FMT_DEBUG("Exception in DrawCameraLinesAndCircles: {}", e.what());
+    }
+    catch (...) {
+        LOG_FMT_DEBUG("Unknown exception occurred in DrawCameraLinesAndCircles");
+    }
 }
+
 
 auto GhostEsp::Draw() -> void {
-    if (GhostAI::ghost)
-    {
-        try {
-            auto point = II::Camera::GetMain()->WorldToScreenPoint(GhostAI::ghost->GetTransform()->GetPosition(), UnityResolve::UnityType::Camera::Eye::Mono);
-            bool isInView = point.z > 0;
-            if (isInView) {
-                point.y = init_space::Info::h - point.y;
+    if (!GhostAI::ghost) return;
 
-                auto ghostPos = GhostAI::ghost->GetTransform()->GetPosition();
-                auto cameraPos = II::Camera::GetMain()->GetTransform()->GetPosition();
+    try {
+        auto [ghostPos, cameraPos, distance, boxSizeMax] = CalculateGhostData();
+        //if (cameraPos.x == 0.0f && cameraPos.y == 0.0f && cameraPos.z == 0.0f) return;
+        //if (ghostPos.x == 0.0f && ghostPos.y == 0.0f && ghostPos.z == 0.0f) return;
 
-                auto ghostScale = GhostAI::ghost->GetTransform()->GetLocalScale();
-                auto result = ghostPos - cameraPos;
+        auto camera = II::Camera::GetMain();
+        if (!camera) return;
 
-                float distance = std::sqrt(result.x * result.x + result.y * result.y + result.z * result.z);
-                float ghostScaleMagnitude = std::sqrt(ghostScale.x * ghostScale.x + ghostScale.y * ghostScale.y + ghostScale.z * ghostScale.z);
-                float realGhostScale = ghostScaleMagnitude * 100.0f;
+        auto point = camera->WorldToScreenPoint(
+            ghostPos,
+            UnityResolve::UnityType::Camera::Eye::Mono
+        );
 
-                distance = std::abs(distance - ghostScaleMagnitude);
-                float boxSizeMax = ghostScaleMagnitude * 100.0f;
+        bool isInView = point.z > 0.0f;
+        point.y = init_space::Info::h - point.y;
 
-                // Draw ghost box and info if needed
-                // DrawGhostBoxAndInfo({ point.x, point.y }, distance, boxSizeMax, 
-                //     std::format("[{}]\n{} | {:.2f}", GhostAI::ghost->ghostState, static_cast<GhostAI::GhostType>(static_cast<int>(GhostAI::ghost->ghostInfo->ghostType) + 1), distance).c_str());
+        if (isInView) {
+            HandleVisibleGhost(ghostPos, distance);
+        }
+        else {
+            if (bStateInfo) {
+                DrawGhostStateInfo(distance);
+            }
+        }
+    }
+    catch (const std::runtime_error& e) {
+        LOG_FMT_DEBUG("Runtime error: {}", e.what());
+    }
+    catch (const std::exception& e) {
+        LOG_FMT_DEBUG("Exception: {}", e.what());
+    }
+    catch (...) {
+        LOG_FMT_DEBUG("Unknown exception occurred");
+    }
+}
 
-                if (bStateInfo) {
-                    DrawGhostStateInfo(distance);
-                }
+auto GhostEsp::CalculateGhostData() -> std::tuple<II::Vector3, II::Vector3, float, float> {
+    auto ghostTransform = GhostAI::ghost->GetTransform();
+    if (!ghostTransform) return {};
 
-                if (bBoneWallHack || bEsp) {
-                    for (const auto pAnimator : GhostAI::ghost->GetGameObject()->GetComponentsInChildren<II::Animator*>(I::Get("UnityEngine.AnimationModule.dll")->Get("Animator"))) {
-                        if (bBoneWallHack) {
-                            DrawBoneConnections(pAnimator, distance);
-                        }
+    auto camera = II::Camera::GetMain();
+    if (!camera) return {};
 
-                        if (bEsp) {
-                            DrawCameraLinesAndCircles(pAnimator, distance);
-                        }
+    auto ghostPos = ghostTransform->GetPosition();
+    auto cameraTransform = camera->GetTransform();
+    if (!cameraTransform) return {};
+
+    auto cameraPos = cameraTransform->GetPosition();
+    auto ghostScale = ghostTransform->GetLocalScale();
+
+    auto result = ghostPos - cameraPos;
+    float distance = std::sqrt(result.x * result.x + result.y * result.y + result.z * result.z);
+    float ghostScaleMagnitude = std::sqrt(ghostScale.x * ghostScale.x + ghostScale.y * ghostScale.y + ghostScale.z * ghostScale.z);
+
+    return { ghostPos, cameraPos, std::abs(distance - ghostScaleMagnitude), ghostScaleMagnitude * 100.0f };
+}
+
+void GhostEsp::HandleVisibleGhost(const II::Vector3& ghostPos, float distance) {
+    if (bStateInfo) {
+        DrawGhostStateInfo(distance);
+    }
+
+    if (bBoneWallHack || bEsp) {
+        DrawGhostBonesAndEMF(distance);
+    }
+}
+
+void GhostEsp::DrawGhostBonesAndEMF(float distance) {
+    FOR_EACH_COMPONENT(GhostAI::ghost, II::Animator, "UnityEngine.AnimationModule.dll", "Animator", pAnimator) {
+        if (pAnimator) {
+            if (bBoneWallHack) {
+                DrawBoneConnections(pAnimator, distance);
+            }
+
+            if (bEsp) {
+                DrawCameraLinesAndCircles(pAnimator, distance);
+            }
+        }
+    }
+
+    ManageEMFList();
+    DrawDNAIfPresent();
+}
+
+void GhostEsp::ManageEMFList() {
+    std::vector<EMF*> toRemove{};
+    if (!GhostAI::pEMF.empty()) {
+        auto now = std::chrono::steady_clock::now();
+
+        for (const auto& [emf, timestamp] : GhostAI::pEMF) {
+            if (emf) {
+                FOR_EACH_COMPONENT(emf, II::Transform, "UnityEngine.CoreModule.dll", "Transform", pTransform) {
+                    if (pTransform && bDrawEMF) {
+                        DrawTextFromPosition("EMF", pTransform->GetPosition());
                     }
                 }
-            }
-            else {
-                auto ghostPos = GhostAI::ghost->GetTransform()->GetPosition();
-                auto cameraPos = II::Camera::GetMain()->GetTransform()->GetPosition();
 
-                auto ghostScale = GhostAI::ghost->GetTransform()->GetLocalScale();
-                auto result = ghostPos - cameraPos;
+                auto seconds_passed = std::chrono::duration_cast<std::chrono::seconds>(now - timestamp).count();
 
-                float distance = std::sqrt(result.x * result.x + result.y * result.y + result.z * result.z);
-                float ghostScaleMagnitude = std::sqrt(ghostScale.x * ghostScale.x + ghostScale.y * ghostScale.y + ghostScale.z * ghostScale.z);
-                float realGhostScale = ghostScaleMagnitude * 100.0f;
-
-                distance = std::abs(distance - ghostScaleMagnitude);
-
-                if (bStateInfo) {
-                    DrawGhostStateInfo(distance);
+                if (seconds_passed >= 20) {
+                    toRemove.push_back(emf);
                 }
             }
         }
-        catch (const std::exception& e) {
-            std::cerr << "Exception: " << e.what() << std::endl;
+
+        for (EMF* emf : toRemove) {
+            if (emf) {
+                GhostAI::pEMF.erase(
+                    std::remove_if(GhostAI::pEMF.begin(), GhostAI::pEMF.end(),
+                        [emf](const auto& tuple) {
+                            return std::get<0>(tuple) == emf;
+                        }), GhostAI::pEMF.end());
+            }
         }
-        catch (...) {
-            std::cerr << "Unknown exception occurred" << std::endl;
+
+        toRemove.clear();
+    }
+}
+
+void GhostEsp::DrawDNAIfPresent() {
+    if (GhostAI::pDNA && bDrawBone) {
+        FOR_EACH_COMPONENT(GhostAI::pDNA, II::Transform, "UnityEngine.CoreModule.dll", "Transform", pTransform) {
+            if (pTransform) {
+                DrawTextFromPosition("Bone", pTransform->GetPosition());
+            }
         }
     }
 }
+
 
 auto GhostEsp::Render() -> void {
     if (ImGui::Checkbox("Ghost info", &bStateInfo)) {
@@ -290,6 +412,12 @@ auto GhostEsp::Render() -> void {
     }
     if (ImGui::Checkbox("Ghost WallHack", &bBoneWallHack)) {
         Gui::AddNotify("Ghost WallHack", bBoneWallHack ? "Enabled" : "Disabled", 3.5f, ImColor(255, 255, 255, 255), ImColor(32, 68, 93, 220));
+    }
+    if (ImGui::Checkbox("Bone", &bDrawBone)) {
+        Gui::AddNotify("Bone", bDrawBone ? "Enabled" : "Disabled", 3.5f, ImColor(255, 255, 255, 255), ImColor(32, 68, 93, 220));
+    }
+    if (ImGui::Checkbox("EMF Data", &bDrawEMF)) {
+        Gui::AddNotify("EMF Data", bDrawEMF ? "Enabled" : "Disabled", 3.5f, ImColor(255, 255, 255, 255), ImColor(32, 68, 93, 220));
     }
 }
 auto GhostEsp::Update() -> void { Feature::Update(); }

@@ -36,6 +36,11 @@ public:
 	inline static std::vector<Player*> players{};
 	inline static std::mutex           playersMutex;
 
+	std::vector<Player*> GetPlayers() {
+		std::lock_guard<std::mutex> lock(playersMutex); 
+		return players;
+	}
+
 	inline static IM* mTeleport{};
 
 	inline static IM::MethodPointer<void, Player*> mStartKillingPlayer{};

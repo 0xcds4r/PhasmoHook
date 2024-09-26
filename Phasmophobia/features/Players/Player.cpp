@@ -9,7 +9,7 @@
 
 inline auto Player::GetOffsetValue(Player* _this, const std::string& name)
 {
-	if (const auto pClass = I::Get("Assembly-CSharp.dll")->Get("Player")) {
+	GET_CLASS("Assembly-CSharp.dll", "Player", pClass) {
 		try {
 			return pClass->GetValue<float>(static_cast<void*>(_this), name);
 		}
@@ -22,7 +22,7 @@ inline auto Player::GetOffsetValue(Player* _this, const std::string& name)
 auto Player::InitOnce() -> void {
 	LOG_FMT_DEBUG("Phasmohook initializing once Player..");
 
-	if (const auto pClass = I::Get("Assembly-CSharp.dll")->Get("Player")) {
+	GET_CLASS("Assembly-CSharp.dll", "Player", pClass) {
 		mAwake              = pClass->Get<IM>("Awake")->Cast<void, Player*>();
 		mOnDestroy          = pClass->Get<IM>("OnDestroy")->Cast<void, Player*>();
 		mKillPlayer         = pClass->Get<IM>("KillPlayer")->Cast<void, Player*, bool>();
@@ -83,12 +83,17 @@ auto UNITY_CALLING_CONVENTION Player::HSetPlayerSpeed(Player* _this, float speed
 auto UNITY_CALLING_CONVENTION Player::HAwake(Player* _this) -> void {
 	std::lock_guard lock(playersMutex);
 	players.push_back(_this);
+
 	H::Fcall(HAwake, _this);
 }
 
 auto UNITY_CALLING_CONVENTION Player::HOnDestroy(Player* _this) -> void {
 	std::lock_guard lock(playersMutex);
-	if (const auto it = std::ranges::find(players, _this); it != players.end()) players.erase(it);
+	
+	if (const auto it = std::ranges::find(players, _this); it != players.end()) {
+		players.erase(it);
+	}
+
 	if (players.empty()) {
 		GhostAI::ghost = nullptr;
 		Room::rooms.clear();

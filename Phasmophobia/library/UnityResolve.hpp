@@ -206,6 +206,11 @@ public:
 		}
 
 		template <typename RType>
+		auto GetValue(void* obj, unsigned int offset) -> RType {
+			return *reinterpret_cast<RType*>(reinterpret_cast<uintptr_t>(obj) + offset);
+		}
+
+		template <typename RType>
 		auto GetValue(void* obj, const std::string& name) -> RType { return *reinterpret_cast<RType*>(reinterpret_cast<uintptr_t>(obj) + Get<Field>(name)->offset); }
 
 		template <typename RType>
@@ -1534,6 +1539,26 @@ public:
 				return {};
 			}
 
+			auto GetGroundHeightOffset(const Vector3& position) -> Vector3 {
+				static Method* method = nullptr;
+
+				if (!method) {
+					const auto assembly = Get("Assembly-CSharp-firstpass.dll");
+					const auto type = assembly ? assembly->Get("TerrainOffset") : nullptr;
+					if (type) {
+						method = type->Get<Method>("GetGroundHeightOffset");
+					}
+				}
+
+				if (method) {
+					Vector3 vec3{};  
+					method->Invoke<void>(this, position, &vec3); 
+					return vec3;
+				}
+
+				throw std::logic_error("Method 'GetGroundHeightOffset' not found");
+			}
+
 			auto SetLocalPosition(const Vector3& position) -> void {
 				static Method* method;
 				if (!method) method = Get("UnityEngine.CoreModule.dll")->Get("Transform")->Get<Method>(mode_ == Mode::Mono ? "set_localPosition_Injected" : "set_localPosition");
@@ -1868,6 +1893,10 @@ public:
 
 		struct MonoBehaviour : Behaviour {
 			void* m_CancellationTokenSource;
+		};
+
+		struct MonoBehaviourPun : MonoBehaviour {
+			void* pvCache;
 		};
 
 		struct Physics {

@@ -105,6 +105,15 @@
     <ClCompile Include="GUI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="features\RenderSettings\RenderSettings.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="features\DNAEvidence.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="features\EMF.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="library\D3D11Hook.h">
@@ -261,6 +270,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="dllmain.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="features\RenderSettings\RenderSettings.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="features\DNAEvidence.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="features\EMF.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

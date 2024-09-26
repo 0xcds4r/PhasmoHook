@@ -1,6 +1,6 @@
 ﻿#include "GhostProperties.h"
 auto GhostProperties::GetInfo() const -> const GuiInfo& {
-	return *new GuiInfo{ reinterpret_cast<const char*>(u8"鬼魂 (Ghost)"), reinterpret_cast<const char*>(u8"属性 (Properties)"), true, true, true };
+	return *new GuiInfo{ reinterpret_cast<const char*>(u8"(Ghost)"), reinterpret_cast<const char*>(u8"(Properties)"), true, true, true };
 }
 auto GhostProperties::Draw() -> void { Feature::Draw(); }
 auto GhostProperties::Render() -> void { 

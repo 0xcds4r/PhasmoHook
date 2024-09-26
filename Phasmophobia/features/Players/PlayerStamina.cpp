@@ -5,7 +5,7 @@
 auto PlayerStamina::InitOnce() -> void {
 	LOG_FMT_DEBUG("Phasmohook initializing once PlayerStamina..");
 
-	if (const auto pClass = I::Get("Assembly-CSharp.dll")->Get("PlayerStamina")) {
+	GET_CLASS("Assembly-CSharp.dll", "PlayerStamina", pClass) {
 		mUpdate = pClass->Get<IM>("Update")->Cast<void, PlayerStamina*>();
 	}
 
@@ -27,7 +27,7 @@ inline auto UNITY_CALLING_CONVENTION PlayerStamina::HUpdate(PlayerStamina* _this
 auto PCStamina::InitOnce() -> void {
 	LOG_FMT_DEBUG("Phasmohook initializing once PCStamina..");
 
-	if (const auto pClass = I::Get("Assembly-CSharp.dll")->Get("PCStamina")) {
+	GET_CLASS("Assembly-CSharp.dll", "PCStamina", pClass) {
 		mUpdate = pClass->Get<IM>("Update")->Cast<void, PCStamina*>();
 	}
 

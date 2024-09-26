@@ -21,6 +21,12 @@
 #include <cstdint>
 #include <map>
 
+#define FOR_EACH_COMPONENT(gPtr, componentType, dllName, componentName, componentVar) \
+    for (const auto componentVar : (gPtr)->GetGameObject()->GetComponentsInChildren<componentType*>(I::Get(dllName)->Get(componentName)))
+
+#define GET_CLASS(dllName, className, classVar) \
+    if (const auto classVar = I::Get(dllName)->Get(className))
+
 #define U8(X) reinterpret_cast<const char*>(X)
 using I = UnityResolve;
 using IM = UnityResolve::Method;

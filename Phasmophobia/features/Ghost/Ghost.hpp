@@ -6,6 +6,8 @@
 #include "../Players/Player.hpp"
 
 #include "../Rooms/Room.hpp"
+#include "../DNAEvidence.h"
+#include "../EMF.h"
 
 #pragma pack(8)
 class GhostActivity;
@@ -110,9 +112,20 @@ public:
     bool canWander;
     char otherSkipData[0x95];
 
+    static inline DNAEvidence* pDNA = nullptr;
+    static inline std::vector<std::tuple<EMF*, std::chrono::time_point<std::chrono::steady_clock>>> pEMF;
+
+    static inline std::string currentRoom{};
+    static inline std::string favRoom{};
+
     static inline auto GetOffsetValue(GhostAI* _this, const std::string& name);
 
+    static Room* GetGhostCurrentRoom(GhostAI* _this);
+
     static auto InitOnce() -> void;
+    static void UpdateFavouriteRoom(const std::string& roomName);
+    static void UpdateCurrentRoom(const std::string& roomName);
+
 	inline static GhostAI* ghost{};
 
     inline static IM::MethodPointer<void, GhostAI*, int> mAppear{};

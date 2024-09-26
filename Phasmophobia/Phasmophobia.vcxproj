@@ -86,6 +86,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="features\EMF.cpp" />
+    <ClCompile Include="features\DNAEvidence.cpp" />
     <ClCompile Include="features\Ghost\Behavior\GhostBehavior.cpp" />
     <ClCompile Include="features\Ghost\Esp\GhostEsp.cpp" />
     <ClCompile Include="features\Ghost\Features\GhostFeatures.cpp" />
@@ -115,6 +117,7 @@
     <ClCompile Include="library\imgui\implot_items.cpp" />
     <ClCompile Include="library\kiero\kiero.cpp" />
     <ClCompile Include="features\Players\PlayerStamina.cpp" />
+    <ClCompile Include="features\RenderSettings\RenderSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
@@ -141,6 +144,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dllmain.h" />
+    <ClInclude Include="features\EMF.h" />
+    <ClInclude Include="features\DNAEvidence.h" />
     <ClInclude Include="features\Ghost\Behavior\GhostBehavior.h" />
     <ClInclude Include="features\Ghost\Esp\GhostEsp.hpp" />
     <ClInclude Include="features\Ghost\Features\GhostFeatures.hpp" />
@@ -192,6 +197,7 @@
     <ClInclude Include="library\UnityResolve.hpp" />
     <ClInclude Include="features\Players\PlayerStamina.hpp" />
     <ClInclude Include="NotificationManager.h" />
+    <ClInclude Include="features\RenderSettings\RenderSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="library\detours\[x64]detours.lib" />

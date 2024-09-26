@@ -6,26 +6,23 @@
 auto FirstPersonController::InitOnce() -> void {
 	LOG_FMT_DEBUG("Phasmohook initializing once FirstPersonController..");
 
-	//std::cout << "FirstPersonController::InitOnce" << std::endl;
-
-	if (const auto pClass = I::Get("Assembly-CSharp-firstpass.dll")->Get("FirstPersonController")) {
+	GET_CLASS("Assembly-CSharp-firstpass.dll", "FirstPersonController", pClass) {
 		mUpdate = pClass->Get<IM>("Update")->Cast<void, FirstPersonController*>();
 	}
 
 	if (mUpdate) {
-		//std::cout << "FirstPersonController::HUpdate hooked" << std::endl;
 		H::Install(mUpdate, HUpdate);
 	}
 }
 
 inline auto FirstPersonController::GetOffsetValue(FirstPersonController* _this, const std::string& name) 
 {
-	if (const auto pClass = I::Get("Assembly-CSharp-firstpass.dll")->Get("FirstPersonController")) {
+	GET_CLASS("Assembly-CSharp-firstpass.dll", "FirstPersonController", pClass) {
 		try {
 			return pClass->GetValue<float>(static_cast<void*>(_this), name);
 		}
 		catch (const std::exception& ex) {
-			std::cerr << "Error retrieving " << name.c_str() << ": " << ex.what() << std::endl;
+			LOG_FMT_DEBUG("Error retrieving -> {} {}", name.c_str(), ex.what());
 		}
 	}
 }
