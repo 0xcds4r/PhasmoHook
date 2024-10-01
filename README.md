@@ -1,3 +1,7 @@
+It's version is outdated and unstable!
+
+USE NEW --> https://github.com/0xcds4r/PhasmoHook-Black
+
 
 ![image](https://github.com/user-attachments/assets/0305ca73-874c-4531-941e-0fe203a75b2e)
 ![image](https://github.com/user-attachments/assets/ff04f2d8-8094-4a6f-94ee-9480ae3b8b1c)
